@@ -2,15 +2,14 @@ from operator import itemgetter
 from collections import defaultdict
 from itertools import islice
 from lockin import calculate
+from lockin.types import Scores
 
 
 def _take(input: dict[str, float], n: int) -> dict[str, float]:
     return dict(islice(input.items(), n))
 
 
-def _sum(
-    scores: dict[str, dict[int, tuple[int, int, float]]],
-) -> dict[str, float]:
+def _sum(scores: Scores) -> dict[str, float]:
     scores_summed = defaultdict(float)
 
     for ticker, submissions in scores.items():
@@ -37,7 +36,7 @@ def _format(scores: dict[str, float]) -> str:
     return "\n".join(scores_formatted)
 
 
-def scores_str(scores: dict[str, dict[int, tuple[int, int, float]]], n: int) -> str:
+def scores_str(scores: Scores, n: int) -> str:
     scores_summed = _sum(scores)
     scores_sorted = _sort(scores_summed)
     scores_sorted = _take(scores_sorted, n)
@@ -46,9 +45,7 @@ def scores_str(scores: dict[str, dict[int, tuple[int, int, float]]], n: int) -> 
     return scores_formatted
 
 
-def scores_data(
-    scores: dict[str, dict[int, tuple[int, int, float]]], n: int
-) -> dict[str, float]:
+def scores_data(scores: Scores, n: int) -> dict[str, float]:
     scores_summed = _sum(scores)
     scores_sorted = _sort(scores_summed)
     scores_sorted = _take(scores_sorted, n)

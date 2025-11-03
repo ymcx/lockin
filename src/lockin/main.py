@@ -2,8 +2,10 @@ from typing import Any
 from praw import Reddit
 from collections import defaultdict
 from lockin import format, parse
+from lockin.types import Scores
 import os
 import time
+import sys
 import tomllib
 
 
@@ -43,10 +45,17 @@ def main() -> None:
         time.sleep(60 * poll_interval)
 
 
-def sync(reddit, scores, amount_to_list, subreddits) -> None:
+def clear_screen() -> None:
+    if sys.platform in ("win32", "cygwin"):
+        os.system("cls")
+    else:
+        os.system("clear")
+
+
+def sync(reddit: Reddit, scores: Scores, amount_to_list: int, subreddits: str) -> None:
     submissions = reddit.subreddit(subreddits).new()
     parse.scores(scores, submissions)
 
     scores_str = format.scores_str(scores, amount_to_list)
-    os.system("clear")
+    clear_screen()
     print(scores_str)
