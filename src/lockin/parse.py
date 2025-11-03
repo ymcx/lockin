@@ -1,6 +1,3 @@
-from typing import Iterator, Any
-
-
 def _is_dollar(ticker: str) -> bool:
     return ticker.startswith("$")
 
@@ -28,17 +25,3 @@ def tickers(string: str) -> set[str]:
     tickers = [t for t in tickers if _contains_no_numbers(t)]
 
     return set(tickers)
-
-
-def scores(
-    scores: dict[str, dict[int, tuple[int, int, float]]], submissions: Iterator[Any]
-) -> None:
-    for submission in submissions:
-        id = submission.id
-        title = submission.title
-        comments = submission.num_comments
-        score = submission.score
-        epoch = submission.created_utc
-
-        for ticker in tickers(title):
-            scores[ticker][id] = (comments, score, epoch)
