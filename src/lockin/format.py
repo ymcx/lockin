@@ -1,7 +1,7 @@
 from operator import itemgetter
 from collections import defaultdict
 from itertools import islice
-import calculate
+from lockin import calculate
 
 
 def _take(input: dict[str, float], n: int) -> dict[str, float]:

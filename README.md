@@ -1,4 +1,4 @@
-# Degen Scraper
+# LOCKIN
 
 A tool that scrapes investing subreddits, extracts mentioned stock tickers, and visualizes their popularity over time based on frequency and recency.
 

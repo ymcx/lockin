@@ -1,11 +1,9 @@
 from praw import Reddit
 from collections import defaultdict
 import os
-import format
-import parse
+from lockin import format, parse, graph
 import time
 import sys
-import graph
 
 POLL_INTERVAL = 5
 AMOUNT_TO_LIST = 20
