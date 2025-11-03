@@ -1,7 +1,7 @@
 from typing import Any
 from praw import Reddit
 from collections import defaultdict
-from lockin import format, parse, graph
+from lockin import format, parse
 import os
 import time
 import tomllib
@@ -32,28 +32,21 @@ def main() -> None:
     reddit = get_reddit(credentials)
 
     settings = config["settings"]
-    amount_to_list = settings["amount_to_list"]
     poll_interval = settings["poll_interval"]
-    create_graph = settings["create_graph"]
+    amount_to_list = settings["amount_to_list"]
     subreddits = "+".join(settings["subreddits"])
 
     scores = defaultdict(defaultdict)
-    iteration = 0
-
-    if create_graph:
-        figure, axes, lines = graph.create()
 
     while True:
-        submissions = reddit.subreddit(subreddits).new()
-        parse.scores(scores, submissions)
-
-        if create_graph:
-            scores_data = format.scores_data(scores, amount_to_list)
-            graph.update(iteration, scores_data, figure, axes, lines)
-        else:
-            scores_str = format.scores_str(scores, amount_to_list)
-            os.system("clear")
-            print(scores_str)
-
-        iteration += 1
+        sync(reddit, scores, amount_to_list, subreddits)
         time.sleep(60 * poll_interval)
+
+
+def sync(reddit, scores, amount_to_list, subreddits) -> None:
+    submissions = reddit.subreddit(subreddits).new()
+    parse.scores(scores, submissions)
+
+    scores_str = format.scores_str(scores, amount_to_list)
+    os.system("clear")
+    print(scores_str)

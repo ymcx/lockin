@@ -7,7 +7,6 @@ username = ""
 [settings]
 amount_to_list = 20
 poll_interval = 5
-create_graph = false
 subreddits = [
   "DIVIDENDINVESTING",
   "FINANCE",
