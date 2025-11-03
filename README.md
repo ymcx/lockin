@@ -10,10 +10,10 @@ Next, navigate to https://www.reddit.com/prefs/apps to create a new application 
 
 You may take a look at the source files and perhaps make some modifications to, for example, the scraped subreddits.
 
-To actually run the program, you can simply pass the credentials.txt file to main.py like so:
+To actually run the program, you need to pass the modified credentials.txt file along with the selected mode (text/graph):
 
 ```
-python src/main.py credentials.txt
+uv run lockin credentials.txt text
 ```
 
 # Testing
@@ -21,5 +21,5 @@ python src/main.py credentials.txt
 You can run the (few) unit tests by typing:
 
 ```
-python -m tests.main
+uv run pytest
 ```

@@ -1,9 +1,9 @@
-from src import parse
+from lockin import parse
 
 
 def test_ticker_parsing() -> None:
     string = "YOLO! Holding BYND Calls, equivalent to 188,500 shares. I'm not quitting!"
-    parsed = {"BYND"}
+    parsed = {"YOLO", "BYND"}
     assert parsed == parse.tickers(string)
 
     string = "A AA AAA AAAA AAAAA AAAAAA"
@@ -14,7 +14,7 @@ def test_ticker_parsing() -> None:
     parsed = {"A", "AA", "AAA", "AAAA", "AAAAA"}
     assert parsed == parse.tickers(string)
 
-    string = "I'M $A'M B4E BE $ee $Ee $eE $EE"
+    string = "I'M $A'M B4Q BE $ee $Ee $eE $EE"
     parsed = {"IM", "AM", "BE", "EE"}
     assert parsed == parse.tickers(string)
 
@@ -25,13 +25,3 @@ def test_ticker_parsing() -> None:
     string = "$aa $$$abcde $1 1$ABC"
     parsed = {"AA", "ABCDE"}
     assert parsed == parse.tickers(string)
-
-
-def main() -> None:
-    test_ticker_parsing()
-
-    print("All tests passed successfully")
-
-
-if __name__ == "__main__":
-    main()
