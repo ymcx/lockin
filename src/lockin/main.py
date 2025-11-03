@@ -1,36 +1,21 @@
+from typing import Any
 from praw import Reddit
 from collections import defaultdict
-import os
 from lockin import format, parse, graph
+import os
 import time
-import sys
-
-POLL_INTERVAL = 5
-AMOUNT_TO_LIST = 20
-SUBREDDITS = [
-    "DIVIDENDINVESTING",
-    "FINANCE",
-    "INVESTING",
-    "OPTIONS",
-    "PENNYSTOCKS",
-    "ROBINHOOD",
-    "STOCKMARKET",
-    "STOCKS",
-    "TRADING",
-    "VALUEINVESTING",
-    "WALLSTREETBETS",
-]
+import tomllib
 
 
-def read_credentials(path: str) -> dict[str, str]:
-    file = open(path)
-    credentials = [line.strip().split("=") for line in file]
+def read_config() -> dict[str, Any]:
+    file = open("config.toml", "rb")
+    config = tomllib.load(file)
     file.close()
 
-    return dict(credentials)
+    return config
 
 
-def get_reddit(credentials: dict[str, str]) -> Reddit:
+def get_reddit(credentials: dict[str, Any]) -> Reddit:
     return Reddit(
         client_id=credentials["client_id"],
         client_secret=credentials["client_secret"],
@@ -40,30 +25,19 @@ def get_reddit(credentials: dict[str, str]) -> Reddit:
     )
 
 
-def read_arguments() -> tuple[str, bool]:
-    match len(sys.argv):
-        case 1:
-            print("Please pass the credentials.txt file")
-            sys.exit()
-        case 2:
-            print("Please specify if you want to print the scores or show the graph")
-            sys.exit()
-        case _:
-            if sys.argv[2] != "graph" and sys.argv[2] != "text":
-                print("Invalid mode given, please select either 'graph' or 'text'")
-                sys.exit()
-
-    return sys.argv[1], sys.argv[2] == "graph"
-
-
 def main() -> None:
-    arguments = read_arguments()
-    credentials = read_credentials(arguments[0])
-    create_graph = arguments[1]
+    config = read_config()
 
+    credentials = config["credentials"]
     reddit = get_reddit(credentials)
+
+    settings = config["settings"]
+    amount_to_list = settings["amount_to_list"]
+    poll_interval = settings["poll_interval"]
+    create_graph = settings["create_graph"]
+    subreddits = "+".join(settings["subreddits"])
+
     scores = defaultdict(defaultdict)
-    subreddits = "+".join(SUBREDDITS)
     iteration = 0
 
     if create_graph:
@@ -74,16 +48,12 @@ def main() -> None:
         parse.scores(scores, submissions)
 
         if create_graph:
-            scores_data = format.scores_data(scores, AMOUNT_TO_LIST)
+            scores_data = format.scores_data(scores, amount_to_list)
             graph.update(iteration, scores_data, figure, axes, lines)
         else:
-            scores_str = format.scores_str(scores, AMOUNT_TO_LIST)
+            scores_str = format.scores_str(scores, amount_to_list)
             os.system("clear")
             print(scores_str)
 
         iteration += 1
-        time.sleep(60 * POLL_INTERVAL)
-
-
-if __name__ == "__main__":
-    main()
+        time.sleep(60 * poll_interval)
