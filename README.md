@@ -13,11 +13,3 @@ Start the program by typing:
 ```
 uv run lockin
 ```
-
-# Testing
-
-You can run the (few) unit tests by typing:
-
-```
-uv run pytest
-```

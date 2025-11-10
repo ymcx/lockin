@@ -1,5 +1,6 @@
 from praw import Reddit
-from lockin import parse, io
+from lockin import io
+from lockin.parser import TickerParser
 from lockin.score import Scores
 from threading import Event, Thread
 import time
@@ -28,7 +29,9 @@ class Timer:
         return self.interval - (time.time() - self.start) % self.interval
 
 
-def _sync(reddit: Reddit, scores: Scores, subreddits: str) -> None:
+def _sync(
+    parser: TickerParser, reddit: Reddit, scores: Scores, subreddits: str
+) -> None:
     for submission in reddit.subreddit(subreddits).new():
         id = submission.id
         title = submission.title
@@ -36,12 +39,16 @@ def _sync(reddit: Reddit, scores: Scores, subreddits: str) -> None:
         score = submission.score
         epoch = submission.created_utc
 
-        for ticker in parse.tickers(title):
+        for ticker in parser(title):
             scores[ticker][id] = (comments, score, epoch)
 
 
 def thread(
-    reddit: Reddit, scores: Scores, subreddits: str, amount_to_list: int
+    parser: TickerParser,
+    reddit: Reddit,
+    scores: Scores,
+    subreddits: str,
+    amount_to_list: int,
 ) -> None:
-    _sync(reddit, scores, subreddits)
+    _sync(parser, reddit, scores, subreddits)
     io.list_scores(scores, amount_to_list)
